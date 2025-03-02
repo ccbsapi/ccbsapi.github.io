@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+    <meta name="viewport" content="width=360px">
+<style>
+  body{
+    font-size:20px;
+  }
+  #outtext{
+    width:90%;
+    height:150px;
+  }
+  
+  #outmath{
+    overflow:scroll;
+    font-size: 13px;
+  }
+  #mathexp{
+    font-size: 13px;
+  }
+  
+  .button{
+    display: inline-block;
+    background-color: #0c0;
+    border-radius: 6px;
+    color: #fff;
+    padding: 6px;
+    font-size: 13px;
+    margin: 3px 5px 3px 5px;
+    transition-duration: .2s;
+  }
+  
+  .button:active{
+    background-color: #35f;
+  }
+  
+  
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.0/dist/katex.min.css" integrity="sha384-SfHjyzed8eCsTSa4t2GoMc4WnsCLa6cQpFqPRCaizz0FlQUOyafw/AyIUCQU/KuM" crossorigin="anonymous">
+
+
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js" crossorigin="anonymous" ></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/mhchem.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/copy-tex.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js" integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<body>
+<input type="text" value="2" id="nind" placeholder="分子の指数/2">
+<input type="text" value="3" id="dind" placeholder="分母の指数/2">
+<div class="button" onclick="putResult()">計算</div>
+<div class="button" onclick="copy()">コピー</div>
+<div>
+  <textarea id="outtext" placeholder="結果"></textarea>
+  <div id="outmath"></div>
+<div id="mathexp">$$
+\begin {aligned}
+r:=\frac {\pi ^{4}}{4\Gamma \left (\frac {3}4\right )^8}
+\end {aligned}
+$$</div>
+</div>
+<script>
+
+function putResult(){
+  let n = document.getElementById('nind').value*1;
+  let d = document.getElementById('dind').value*1;
+  let resTeX = calcSeries(n,d);
+  document.getElementById('outtext').value=resTeX;
+  katex.render(
+    resTeX,
+    document.getElementById('outmath'),
+    {throwOnError : true,displayMode : true}
+  );
+}
+
+function calcSeries(n,d){
+  const E = [
+    '1/24-1/24L','1/240M-1/240','1/504-1/504N','1/480M^2-1/480','1/264-1/264MN','7/1040M^3+25/6552N^2-691/65520','1/24-1/24M^2L'
+  ];
+  
+  let coefs = sinhpol(d);
+  let ntup = new Tuple();
+  
+  for(let i = 0; i<d; i++){
+    let coef = coefs[i];
+    ntup.addeq(phi(n*2,i*2+1).mulset([coef,0,0,0]));
+  }
+  
+  let result = ntup.spvalue().toString("spvTeX");
+  return '\\sum _{n=1}^\\infty \\frac {'+(n?'n^{'+n*2+'}':1)+'}{\\sinh ^{'+d*2+'}\\pi n}='+result;
+  
+  function phi(n,m){
+    if(n > m)return phi(m,n);
+    // n <= m
+    let Estr = E[(m-n-1)/2];
+    if(!Estr){
+      alert('E_'+1*(m-n+1)+'が定義されていないため、計算できません');
+      throw new Error;
+    }
+    return Tuple().readString(E[(m-n-1)/2]).der(n).mulset([(-1)**n,0,0,0]);
+  }
+}
+
+
+function frac(){
+  return new Fraction(...arguments);
+}
+
+function mulS(set1,set2){
+  return [
+    set1[0].mul(set2[0]),
+    set1[1]*1+set2[1]*1,
+    set1[2]*1+set2[2]*1,
+    set1[3]*1+set2[3]*1
+  ];
+}
+
+function Tuple(set){
+  if (!(this instanceof Tuple)) {
+    var bindParams = [Tuple];
+    Array.prototype.push.apply(bindParams, arguments);
+    return new (Function.prototype.bind.apply(Tuple, bindParams));
+  }
+  
+  let _this = this;
+  let data = [];
+  this.data = data;
+  
+  this.everyset = function(func){
+    let data = _this.data;
+    for(let li in data)for(mi in data[li])for(ni in data[li][mi]){
+      if(data[li]&&data[li][mi]&&(data[li][mi][ni] instanceof Fraction)&&data[li][mi][ni].toString!="0")func([data[li][mi][ni],li,mi,ni]);
+    }
+  }
+  
+  this.toString = function(type){
+    let nominal = [];
+    
+    let str1 = function(char,s){
+      if(0 == s)return "";
+      if(1 == s)return char;
+      //if(0 < s < 10)return char + "^" + s;
+      return char + "^{" + s + "}";
+    }
+    
+    
+    if(false && "spv" == type){
+      /*let _data = _this.data;
+      for(let i in _data){
+        if(!_data[i])continue;
+        let num = 0;
+        
+        for(let j in data[i]){
+          num++;
+          
+        }
+      }*/
+    }else{
+    _this.everyset(([k,li,mi,ni])=>{
+      let fracstr = (type == "TeX" || "spvTeX" == type) ? k.toLatex() : k.toFraction();
+      if(fracstr == "0")return;
+      let str = ("spv" == type || "spvTeX" == type)
+                ? str1('\\pi ',-li)+str1('r',mi)
+                : str1('L',li)+str1('M',mi)+str1('N',ni);
+      if(fracstr == "1"){
+        if(!str){
+          nominal.push("1");
+          return;
+        }
+        fracstr = "";
+      }
+      else if(fracstr == "-1"){
+        if(!str){
+          nominal.push("1");
+          return;
+        }
+        fracstr = "-";
+      }
+      nominal.push(fracstr + str);
+    });
+    }
+    return nominal.join('+').replace(/\+-/g,'-');
+  }
+  
+  this.readString = function(str){
+    str = "+" + str.replace(/\{|\}/g,'') + "+";
+    let ntup = new Tuple();
+    
+    let stack = [];
+    for(i in str){
+      let char = str[i];
+      if("+" == char || "-" == char){
+        stack.push("#");
+        let sign = stack[0];
+        let readStatus = 0;
+        let isindex = false;
+        let curset = [frac((sign == "+") ? 1 : -1 ),0,0,0];
+        let setstack = '';
+        
+        if(stack.length == 1){
+          stack = [char];
+          continue;//空スタックはスルー
+        }
+        
+        for(let si = 1; si<stack.length;si++){
+          let schar = stack[si];
+          //console.log(schar,JSON.stringify(curset),readStatus)
+          if(schar == "L" || schar == "M" || schar =="N" || schar == "#"){
+            if(!isindex){//係数かける
+              if(setstack||!readStatus)(setstack || '1').split('*').forEach(t =>{curset[0] = curset[0].mul(t||1)});
+              else curset[readStatus]++; //LMのように文字が並んだとき
+            }
+            else curset[readStatus] += (setstack||'1')*1;
+            setstack = '';
+            readStatus =  "L" == schar ? 1 :
+                          "M" == schar ? 2 :
+                          "N" == schar ? 3 : 0;
+            isindex = false;
+          }else{
+            if(!setstack&&readStatus&&!isindex){
+              if("^" != schar){
+                curset[readStatus]++;
+                readStatus = 0;
+              }else{
+                isindex = true;
+                continue;
+              }
+            }
+            setstack += schar;
+          }
+        }
+        ntup.addeqset(curset);
+        stack = [];
+      }
+      stack.push(char);
+    }
+    return ntup;
+  }
+  
+  this.readeqString = function(str){
+    _this.data = _this.readString(str).data;
+  }
+  
+  this.addset = function(set){
+    let [k,sl,sm,sn] = set;
+    
+    let ntup = new Tuple();
+    let data2 = ntup.data;
+    _this.everyset(([ek,li,mi,ni]) => {
+      if(!data2[li])data2[li] = [];
+      if(!data2[li][mi])data2[li][mi] = [];
+      data2[li][mi][ni] = ek; 
+    });
+    
+    if(!data2[sl])data2[sl] = [];
+    let datal = data2[sl];
+    if(!datal[sm])datal[sm] = [];
+    let datalm = datal[sm];
+    if(!datalm[sn])datalm[sn] = frac(0);
+    datalm[sn] = datalm[sn].add(k);
+    return ntup;
+  }
+  
+  this.addeqset = function(set){
+    _this.data = _this.addset(set).data;
+    return _this;
+  }
+  
+  this.add = function(tuple){
+    let ntup = new Tuple();
+    let data1 = _this.data;
+    let data2 = tuple.data;
+    for(let il = 0; il < data1.length || il < data2.length; il++){
+      ntup.data[il] = [];
+      if(!data1[il])data1[il] = [];
+      if(!data2[il])data2[il] = [];
+      let data1l = data1[il];
+      let data2l = data2[il];
+      for(let im = 0; im < data1l.length || im < data2l.length; im++){
+        ntup.data[il][im] = [];
+        if(!data1l[im])data1l[im] = [];
+        if(!data2l[im])data2l[im] = [];
+        let data1lm = data1l[im];
+        let data2lm = data2l[im];
+        for(let i_n = 0; i_n < data1lm.length || i_n < data2lm.length; i_n++){
+          if(!data1lm[i_n])data1lm[i_n] = frac(0);
+          if(!data2lm[i_n])data2lm[i_n] = frac(0);
+          ntup.data[il][im][i_n] = data1lm[i_n].add(data2lm[i_n]);
+        }
+      }
+    }
+    return ntup;
+  }
+  
+  this.addeq = function(tuple){
+    _this.data = _this.add(tuple).data;
+    return _this;
+  }
+  
+  this.mulset = function(set){
+    let ntup = new Tuple();
+    //console.log('107:',_this,set)
+    _this.everyset(eset=>{
+      //console.log('109:',eset,set,mulS(eset,set))
+      ntup.addeqset(mulS(eset,set));
+    });
+    return ntup;
+  }
+  
+  this.muleqset = function(set){
+    _this.data = _this.mulset(set).data;
+    return _this;
+  }
+  
+  this.mul = function(tuple){
+    let ntup = new Tuple();
+    _this.everyset(eset=>{
+      ntup.addeq(tuple.mulset(eset));
+    });
+    return ntup;
+  }
+  
+  this.muleq = function(tuple){
+    _this.data = _this.mul(tuple).data;
+    return _this;
+  }
+  
+  this.der = function(n){
+    if(typeof (n*1) !== "number" || n*1 !== n*1)n=1;
+    if(n <= 0)return _this;
+    if(n >1 )return _this.der(1).der(n-1);
+    
+    function derL(s){
+      if(s == 0) return new Tuple([frac(0),0,0,0]);
+      const D = Tuple().readString('M-L^2').mulset([frac(1,12),0,0,0]);
+      return D.mulset([frac(s),s-1,0,0]);
+    }
+    
+    function derM(s){
+      if(s == 0) return new Tuple([frac(0),0,0,0]);
+      const D = Tuple().readString('N-LM').mulset([frac(1,3),0,0,0]);
+      return D.mulset([frac(s),0,s-1,0]);
+    }
+    
+    function derN(s){
+      if(s == 0) return new Tuple([frac(0),0,0,0]);
+      const D = Tuple().readString('M^2-LN').mulset([frac(1,2),0,0,0]);
+      return D.mulset([frac(s),0,0,s-1]);
+    }
+    
+    let ntup = new Tuple();
+    _this.everyset(([k,li,mi,ni])=>{
+      if(!k.n)return;
+      ntup.addeq(derL(li).mulset([k,0,mi,ni]))
+          .addeq(derM(mi).mulset([k,li,0,ni]))
+          .addeq(derN(ni).mulset([k,li,mi,0]));
+    });
+    return ntup;
+  }
+  
+  this.dereq = function(n){
+    _this.data = _this.der(n).data;
+    return _this;
+  }
+  
+  this.spvalue = function(){
+    let ntup = new Tuple();
+    _this.everyset(([k,li,mi,ni])=>{
+      if(ni*1)return;
+      ntup.addeqset([k.mul(3**(li*1+mi*1)),1*li+2*mi,mi,0]);
+    });
+    
+    return ntup;
+  }
+  
+  if(set)this.addeqset(set);
+}
+
+
+function sinhpol(r){
+  if(1 == r)return [frac(4)]; //余因子がおかしくなるため
+  
+  let matrix = [];
+  for(let i = 0; i < r ;i++){
+    matrix[i] = [frac(1,4)];
+    if(0 == i){
+      for(let j=1; j < r; j++) matrix[i][j] = frac(0);
+    }else{ // i != 0
+      for(let j = 1; j < r; j++){
+        let before = matrix[i-1];
+        //console.log(before)
+        matrix[i][j] = frac(before[j-1].mul(j*(2*j+1),2)+before[j].mul((j+1)*(j+1)));
+      }
+    }
+  }
+  //console.log(matrix.map(row=>row.map(val=>val.toFraction())).join('\n'));
+  let detm = matrix.reduce((pre,cur,i)=>pre.mul(cur[i]),frac(1));
+  let invVector = [];
+  for(let i = 0; i < r; i++){
+    invVector[i] = cofactor(matrix,i,r-1).div(detm);
+  }
+  //console.log(invVector.map(v=>v.toFraction()))
+  return invVector;
+}
+
+function cofactor(matrix,n,m){
+  let deg = matrix.length;
+  let nmatrix = [];
+  for(i=0; i < deg; i++){
+    if(i == n)continue;
+    let nrow = [];
+    for(j=0; j<deg ; j++){
+      if(j == m)continue ;
+      nrow.push(matrix[i][j]);
+    }
+    nmatrix.push(nrow);
+  }
+  return det(nmatrix).mul((-1)**(n+m));
+}
+
+function det(matrix){
+  let deg = matrix.length;
+  if(1 == deg)return frac(matrix[0][0]);
+  let val = frac(0);
+  for(let i = 0 ; i<deg ; i++){
+    val = frac(val.add(cofactor(matrix,0,i).mul(matrix[0][i])));
+  }
+  return val;
+}
+
+
+    function copy(){
+      const txt = document.getElementById('outtext')
+      var start=txt.selectionStart;
+      var end=txt.selectionEnd;
+      txt.select();
+      document.execCommand("copy");
+      txt.setSelectionRange(start,end);
+    }
+
+</script>
+
+<script>
+  /*
+Fraction.js v4.2.0 05/03/2022
+https://www.xarg.org/2014/03/rational-numbers-in-javascript/
+Copyright (c) 2021, Robert Eisele (robert@xarg.org)
+Dual licensed under the MIT or GPL Version 2 licenses.
+*/
+
+(function(z){function p(a,c){var b=0,d=1,f=1,l=0,k=0,t=0,x=1,u=1,g=0,h=1,v=1,q=1;if(void 0!==a&&null!==a)if(void 0!==c){if(b=a,d=c,f=b*d,0!==b%1||0!==d%1)throw m.NonIntegerParameter;}else switch(typeof a){case "object":if("d"in a&&"n"in a)b=a.n,d=a.d,"s"in a&&(b*=a.s);else if(0 in a)b=a[0],1 in a&&(d=a[1]);else throw m.InvalidParameter;f=b*d;break;case "number":0>a&&(f=a,a=-a);if(0===a%1)b=a;else if(0<a){1<=a&&(u=Math.pow(10,Math.floor(1+Math.log(a)/Math.LN10)),a/=u);for(;1E7>=h&&1E7>=q;)if(b=(g+
+v)/(h+q),a===b){1E7>=h+q?(b=g+v,d=h+q):q>h?(b=v,d=q):(b=g,d=h);break}else a>b?(g+=v,h+=q):(v+=g,q+=h),1E7<h?(b=v,d=q):(b=g,d=h);b*=u}else if(isNaN(a)||isNaN(c))d=b=NaN;break;case "string":h=a.match(/\d+|./g);if(null===h)throw m.InvalidParameter;"-"===h[g]?(f=-1,g++):"+"===h[g]&&g++;if(h.length===g+1)k=r(h[g++],f);else if("."===h[g+1]||"."===h[g]){"."!==h[g]&&(l=r(h[g++],f));g++;if(g+1===h.length||"("===h[g+1]&&")"===h[g+3]||"'"===h[g+1]&&"'"===h[g+3])k=r(h[g],f),x=Math.pow(10,h[g].length),g++;if("("===
+h[g]&&")"===h[g+2]||"'"===h[g]&&"'"===h[g+2])t=r(h[g+1],f),u=Math.pow(10,h[g+1].length)-1,g+=3}else"/"===h[g+1]||":"===h[g+1]?(k=r(h[g],f),x=r(h[g+2],1),g+=3):"/"===h[g+3]&&" "===h[g+1]&&(l=r(h[g],f),k=r(h[g+2],f),x=r(h[g+4],1),g+=5);if(h.length<=g){d=x*u;f=b=t+d*l+u*k;break}default:throw m.InvalidParameter;}if(0===d)throw m.DivisionByZero;e.s=0>f?-1:1;e.n=Math.abs(b);e.d=Math.abs(d)}function r(a,c){if(isNaN(a=parseInt(a,10)))throw m.InvalidParameter;return a*c}function n(a,c){if(0===c)throw m.DivisionByZero;
+var b=Object.create(m.prototype);b.s=0>a?-1:1;a=0>a?-a:a;var d=w(a,c);b.n=a/d;b.d=c/d;return b}function y(a){for(var c={},b=a,d=2,f=4;f<=b;){for(;0===b%d;)b/=d,c[d]=(c[d]||0)+1;f+=1+2*d++}b!==a?1<b&&(c[b]=(c[b]||0)+1):c[a]=(c[a]||0)+1;return c}function w(a,c){if(!a)return c;if(!c)return a;for(;;){a%=c;if(!a)return c;c%=a;if(!c)return a}}function m(a,c){p(a,c);if(this instanceof m)a=w(e.d,e.n),this.s=e.s,this.n=e.n/a,this.d=e.d/a;else return n(e.s*e.n,e.d)}var e={s:1,n:0,d:1};m.DivisionByZero=Error("Division by Zero");
+m.InvalidParameter=Error("Invalid argument");m.NonIntegerParameter=Error("Parameters must be integer");m.prototype={s:1,n:0,d:1,abs:function(){return n(this.n,this.d)},neg:function(){return n(-this.s*this.n,this.d)},add:function(a,c){p(a,c);return n(this.s*this.n*e.d+e.s*this.d*e.n,this.d*e.d)},sub:function(a,c){p(a,c);return n(this.s*this.n*e.d-e.s*this.d*e.n,this.d*e.d)},mul:function(a,c){p(a,c);return n(this.s*e.s*this.n*e.n,this.d*e.d)},div:function(a,c){p(a,c);return n(this.s*e.s*this.n*e.d,
+this.d*e.n)},clone:function(){return n(this.s*this.n,this.d)},mod:function(a,c){if(isNaN(this.n)||isNaN(this.d))return new m(NaN);if(void 0===a)return n(this.s*this.n%this.d,1);p(a,c);if(0===e.n&&0===this.d)throw m.DivisionByZero;return n(this.s*e.d*this.n%(e.n*this.d),e.d*this.d)},gcd:function(a,c){p(a,c);return n(w(e.n,this.n)*w(e.d,this.d),e.d*this.d)},lcm:function(a,c){p(a,c);return 0===e.n&&0===this.n?n(0,1):n(e.n*this.n,w(e.n,this.n)*w(e.d,this.d))},ceil:function(a){a=Math.pow(10,a||0);return isNaN(this.n)||
+isNaN(this.d)?new m(NaN):n(Math.ceil(a*this.s*this.n/this.d),a)},floor:function(a){a=Math.pow(10,a||0);return isNaN(this.n)||isNaN(this.d)?new m(NaN):n(Math.floor(a*this.s*this.n/this.d),a)},round:function(a){a=Math.pow(10,a||0);return isNaN(this.n)||isNaN(this.d)?new m(NaN):n(Math.round(a*this.s*this.n/this.d),a)},inverse:function(){return n(this.s*this.d,this.n)},pow:function(a,c){p(a,c);if(1===e.d)return 0>e.s?n(Math.pow(this.s*this.d,e.n),Math.pow(this.n,e.n)):n(Math.pow(this.s*this.n,e.n),Math.pow(this.d,
+e.n));if(0>this.s)return null;var b=y(this.n),d=y(this.d),f=1,l=1,k;for(k in b)if("1"!==k){if("0"===k){f=0;break}b[k]*=e.n;if(0===b[k]%e.d)b[k]/=e.d;else return null;f*=Math.pow(k,b[k])}for(k in d)if("1"!==k){d[k]*=e.n;if(0===d[k]%e.d)d[k]/=e.d;else return null;l*=Math.pow(k,d[k])}return 0>e.s?n(l,f):n(f,l)},equals:function(a,c){p(a,c);return this.s*this.n*e.d===e.s*e.n*this.d},compare:function(a,c){p(a,c);var b=this.s*this.n*e.d-e.s*e.n*this.d;return(0<b)-(0>b)},simplify:function(a){if(isNaN(this.n)||
+isNaN(this.d))return this;a=a||.001;for(var c=this.abs(),b=c.toContinued(),d=1;d<b.length;d++){for(var f=n(b[d-1],1),l=d-2;0<=l;l--)f=f.inverse().add(b[l]);if(f.sub(c).abs().valueOf()<a)return f.mul(this.s)}return this},divisible:function(a,c){p(a,c);return!(!(e.n*this.d)||this.n*e.d%(e.n*this.d))},valueOf:function(){return this.s*this.n/this.d},toFraction:function(a){var c,b="",d=this.n,f=this.d;0>this.s&&(b+="-");1===f?b+=d:(a&&0<(c=Math.floor(d/f))&&(b=b+c+" ",d%=f),b=b+d+"/",b+=f);return b},toLatex:function(a){var c,
+b="",d=this.n,f=this.d;0>this.s&&(b+="-");1===f?b+=d:(a&&0<(c=Math.floor(d/f))&&(b+=c,d%=f),b=b+"\\frac{"+d+"}{"+f,b+="}");return b},toContinued:function(){var a=this.n,c=this.d,b=[];if(isNaN(a)||isNaN(c))return b;do{b.push(Math.floor(a/c));var d=a%c;a=c;c=d}while(1!==a);return b},toString:function(a){var c=this.n,b=this.d;if(isNaN(c)||isNaN(b))return"NaN";var d;a:{for(d=b;0===d%2;d/=2);for(;0===d%5;d/=5);if(1===d)d=0;else{for(var f=10%d,l=1;1!==f;l++)if(f=10*f%d,2E3<l){d=0;break a}d=l}}a:{f=1;l=
+10;for(var k=d,t=1;0<k;l=l*l%b,k>>=1)k&1&&(t=t*l%b);l=t;for(k=0;300>k;k++){if(f===l){l=k;break a}f=10*f%b;l=10*l%b}l=0}f=0>this.s?"-":"";f+=c/b|0;(c=c%b*10)&&(f+=".");if(d){for(a=l;a--;)f+=c/b|0,c%=b,c*=10;f+="(";for(a=d;a--;)f+=c/b|0,c%=b,c*=10;f+=")"}else for(a=a||15;c&&a--;)f+=c/b|0,c%=b,c*=10;return f}};"function"===typeof define&&define.amd?define([],function(){return m}):"object"===typeof exports?(Object.defineProperty(m,"__esModule",{value:!0}),m["default"]=m,m.Fraction=m,module.exports=m):
+z.Fraction=m})(this);
+
+</script>
+</body>
+</html>
