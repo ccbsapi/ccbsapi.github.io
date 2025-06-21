@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
             gameBoard.classList.add('large-board', 'cols-9');
 
             gameBoard.style.setProperty('--cols', COLS);
-            gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 55px)`;
-            gameBoard.style.gridTemplateRows = `repeat(${ROWS}, 55px)`;
+            gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 50px)`;
+            gameBoard.style.gridTemplateRows = `repeat(${ROWS}, 50px)`;
         }
         initializeBoard(); // 盤面サイズが変更されたら再初期化
     }
