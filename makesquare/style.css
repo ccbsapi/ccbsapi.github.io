@@ -1,0 +1,244 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f9f9f9; /* 明るい背景色 */
+    margin: 0;
+    color: #333;
+    overflow: auto; /* 盤面が大きくなった場合にスクロールできるように */
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* ルール説明のスタイル */
+#rule-description {
+    margin-bottom: 20px;
+    padding: 15px 25px;
+    background-color: #e8f5e9; /* 薄い緑色の背景 */
+    border: 1px solid #c8e6c9; /* わずかに濃い緑色の枠線 */
+    border-radius: 8px;
+    font-size: 1em;
+    color: #388e3c; /* 濃い緑色の文字 */
+    max-width: 600px; /* ボードの幅に合わせて最大幅を設定 */
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* 軽い影 */
+}
+
+
+/* モード切り替えスイッチのスタイル */
+.mode-switch-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-right: 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+#mode-label {
+    font-size: 1.1em;
+    color: #555;
+}
+
+/* 盤面サイズ選択のスタイル */
+.board-size-selection {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    color: #555;
+}
+
+.board-size-selection label {
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.board-size-selection input[type="radio"] {
+    margin-right: 5px;
+}
+
+
+#game-message {
+    margin-bottom: 25px;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #555;
+}
+
+#game-board {
+    display: grid;
+    background-color: #f0f0f0; /* ボードの背景色 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* 角丸のため */
+    /* デフォルトはsmallサイズで設定 */
+    grid-template-columns: repeat(7, 70px);
+    grid-template-rows: repeat(6, 70px);
+}
+
+.cell {
+    background-color: #ffffff; /* セルの初期色を白に */
+    border: 1px solid #e0e0e0; /* 細い境界線 */
+    border-radius: 50%; /* 円形 */
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.1s ease; /* ホバー効果 */
+    position: relative; /* プレビュー用 */
+    margin: 0; /* セル間のマージンを削除 */
+    /* デフォルトはsmallサイズで設定 */
+    width: 70px;
+    height: 70px;
+}
+
+/* 盤面のグリッド線は各セルのボーダーで表現 (デフォルトは7列) */
+#game-board.cols-7 .cell:nth-child(7n) { border-right: 1px solid #e0e0e0; }
+#game-board.cols-7 .cell:nth-child(7n+1) { border-left: 1px solid #e0e0e0; }
+#game-board.cols-7 .cell:nth-child(-n+7) { border-top: 1px solid #e0e0e0; }
+#game-board.cols-7 .cell:nth-last-child(-n+7) { border-bottom: 1px solid #e0e0e0; }
+
+/* 9列の場合のグリッド線 */
+#game-board.cols-9 .cell:nth-child(9n) { border-right: 1px solid #e0e0e0; }
+#game-board.cols-9 .cell:nth-child(9n+1) { border-left: 1px solid #e0e0e0; }
+#game-board.cols-9 .cell:nth-child(-n+9) { border-top: 1px solid #e0e0e0; }
+#game-board.cols-9 .cell:nth-last-child(-n+9) { border-bottom: 1px solid #e0e0e0; }
+
+
+/* 大サイズ (10x9) 用のセルサイズ */
+#game-board.large-board .cell {
+    width: 55px;
+    height: 55px;
+}
+
+/* 大サイズ時のプレビューディスク */
+#game-board.large-board .preview-disk {
+    width: 50px;
+    height: 50px;
+}
+
+
+/* プレイヤー1（赤）の石 */
+.cell.player1 {
+    background-color: #e74c3c; /* 鮮やかな赤 */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* プレイヤー2（黄）の石 */
+.cell.player2 {
+    background-color: #f1c40f; /* 鮮やかな黄 */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* ホバー時の列ハイライト */
+.column-highlight {
+    background-color: rgba(0, 123, 255, 0.1); /* 薄い青 */
+}
+
+/* ホバー時のプレビュー石 */
+.preview-disk {
+    /* widthとheightは.cellに応じて動的に設定される */
+    border-radius: 50%;
+    position: absolute;
+    background-color: var(--preview-color); /* JavaScriptから設定されるカスタムプロパティ */
+    opacity: 0; /* デフォルトでは非表示 */
+    transition: opacity 0.2s ease;
+}
+
+.cell:hover .preview-disk {
+    opacity: 1; /* ホバー時に表示 */
+}
+
+/* 勝利時のハイライト */
+.cell.win-highlight {
+    box-shadow: 0 0 0 4px #2ecc71; /* 緑色の枠線 */
+    z-index: 10; /* 他の要素より手前に表示 */
+}
+
+
+#reset-button {
+    margin-top: 30px;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    cursor: pointer;
+    background-color: #3498db; /* 青系のリセットボタン */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#reset-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+}
+
+#reset-button:active {
+    transform: translateY(0);
+}

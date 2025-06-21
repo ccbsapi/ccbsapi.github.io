@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四目並べ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>正方形四目並べ</h1>
+    <div id="rule-description">
+        各辺が軸に平行な正方形の四頂点に石を配置することが勝利条件です。
+    </div>
+    <div class="mode-switch-container">
+        <label class="switch">
+            <input type="checkbox" id="mode-toggle">
+            <span class="slider round"></span>
+        </label>
+        <span id="mode-label">対人モード</span>
+    </div>
+
+    <div class="board-size-selection">
+        <label>
+            <input type="radio" name="board-size" value="small" checked> 6x7 (標準)
+        </label>
+        <label>
+            <input type="radio" name="board-size" value="large"> 10x9 (大)
+        </label>
+    </div>
+    <div id="game-message">赤色🔴の番です</div>
+    <div id="game-board"></div>
+    <button id="reset-button">リセット</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
