@@ -25,20 +25,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 盤面サイズとAIの深さを設定する関数
     function setBoardSize(sizeType) {
+        gameBoard.classList.remove('large-board', 'cols-7', 'cols-9');
         if (sizeType === 'small') {
             ROWS = 6;
             COLS = 7;
             MAX_DEPTH = 6; // 6x7盤面では深く探索
-            gameBoard.classList.remove('large-board', 'cols-9');
             gameBoard.classList.add('cols-7');
+            gameBoard.style.setProperty('--cols', COLS); 
             gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 70px)`;
             gameBoard.style.gridTemplateRows = `repeat(${ROWS}, 70px)`;
         } else { // 'large'
             ROWS = 10;
             COLS = 9;
             MAX_DEPTH = 5; // 10x9盤面では計算量が多くなるため少し浅く
-            gameBoard.classList.remove('cols-7');
             gameBoard.classList.add('large-board', 'cols-9');
+
+            gameBoard.style.setProperty('--cols', COLS);
             gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 55px)`;
             gameBoard.style.gridTemplateRows = `repeat(${ROWS}, 55px)`;
         }

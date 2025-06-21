@@ -242,3 +242,88 @@ input:checked + .slider:before {
 #reset-button:active {
     transform: translateY(0);
 }
+
+
+
+
+/* スマートフォン表示用 (最大幅 768px) */
+@media (max-width: 768px) {
+    body {
+        /* スマホでのみスクロールバーを非表示にする（UX改善のため） */
+        overflow-x: hidden; 
+    }
+
+    h1 {
+        font-size: 1.8em; /* タイトルを少し小さく */
+        margin-bottom: 15px;
+    }
+
+    #rule-description {
+        font-size: 0.9em; /* ルール説明のフォントサイズを調整 */
+        padding: 10px 15px;
+        margin-bottom: 15px;
+    }
+
+    .mode-switch-container,
+    .board-size-selection {
+        flex-direction: column; /* 要素を縦に並べる */
+        align-items: center; /* 中央揃え */
+        margin-bottom: 15px;
+    }
+
+    .mode-switch-container .switch {
+        margin-bottom: 10px; /* スイッチとラベルの間にスペース */
+    }
+
+    #mode-label,
+    .board-size-selection label {
+        font-size: 1em; /* フォントサイズを調整 */
+        margin: 5px 0; /* ラベル間の余白 */
+    }
+
+    #game-message {
+        font-size: 1.1em; /* ゲームメッセージを少し小さく */
+        margin-bottom: 20px;
+    }
+
+    #game-board {
+        /* スマホ向けにボードの最大幅を設定し、はみ出しを防ぐ */
+        max-width: 95vw; /* ビューポート幅の95%に制限 */
+        /* 必要に応じて、セルのサイズもここで調整 */
+        border-radius: 5px; /* 角丸を少し小さく */
+    }
+
+    /* 各セル、プレビューディスクのサイズをレスポンシブにする */
+    .cell {
+        min-width: 35px; /* セルの最小幅を設定 (小さすぎないように) */
+        min-height: 35px; /* セルの最小高さを設定 */
+        width: calc((95vw - 2px) / var(--cols)); /* ボードの最大幅と列数に合わせて動的に計算 */
+        height: calc((95vw - 2px) / var(--cols)); /* 同上 */
+        border-width: 0.5px; /* ボーダーを細く */
+    }
+
+    .preview-disk {
+        width: 80%; /* セルに対する比率で調整 */
+        height: 80%;
+    }
+
+    /* スモールボード (6x7) の場合 */
+    #game-board.cols-7 .cell {
+        --cols: 7; /* CSSカスタムプロパティで列数を設定 */
+        width: calc((95vw - 2px) / var(--cols));
+        height: calc((95vw - 2px) / var(--cols));
+    }
+
+    /* ラージボード (9x10) の場合 */
+    #game-board.cols-10 .cell {
+        --cols: 10; /* CSSカスタムプロパティで列数を設定 */
+        width: calc((95vw - 2px) / var(--cols));
+        height: calc((95vw - 2px) / var(--cols));
+    }
+    
+    #reset-button {
+        padding: 10px 20px;
+        font-size: 1em;
+        margin-top: 25px;
+    }
+}
