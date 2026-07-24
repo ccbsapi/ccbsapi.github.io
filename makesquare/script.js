@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
             gameBoard.classList.add('large-board', 'cols-9');
 
             gameBoard.style.setProperty('--cols', COLS);
-            gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 50px)`;
-            gameBoard.style.gridTemplateRows = `repeat(${ROWS}, 50px)`;
+            gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 55px)`;
+            gameBoard.style.gridTemplateRows = `repeat(${ROWS}, 55px)`;
         }
         initializeBoard(); // 盤面サイズが変更されたら再初期化
     }
@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.classList.add('cell');
                 cell.dataset.row = r;
                 cell.dataset.col = c;
-                cell.style.width = `${cellSize}px`;
-                cell.style.height = `${cellSize}px`;
+                //cell.style.width = `${cellSize}px`;
+                //cell.style.height = `${cellSize}px`;
                 cell.addEventListener('click', () => handleColumnClick(c));
 
                 // ホバーイベントリスナーを各セルに追加

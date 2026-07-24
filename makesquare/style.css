@@ -299,8 +299,8 @@ input:checked + .slider:before {
         min-width: 30px; /* 最小幅を少し小さく */
         min-height: 30px; /* 最小高さを少し小さく */
         /* widthとheightの計算式を修正。vwから直接引く値を増やして、ボーダーと間隔をより多く考慮 */
-        width: calc((100vw - 20px) / var(--cols)); /* 100vwから20px引く (余白とボーダーの合計) */
-        height: calc((100vw - 20px) / var(--cols)); /* 同上 */
+        width: calc((98vw - 20px) / var(--cols)); /* 100vwから20px引く (余白とボーダーの合計) */
+        height: calc((98vw - 20px) / var(--cols)); /* 同上 */
         border-width: 0.5px;
         flex-shrink: 0; /* セルが縮まないように固定 */
     }
@@ -315,9 +315,9 @@ input:checked + .slider:before {
         --cols: 7;
     }
 
-    /* ラージボード (9x10) の場合 */
-    #game-board.cols-10 .cell {
-        --cols: 10;
+    /* ラージボード (10x9) の場合 */
+    #game-board.cols-9 .cell {
+        --cols: 9;
     }
     
     #reset-button {
