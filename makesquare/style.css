@@ -136,8 +136,8 @@ input:checked + .slider:before {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     overflow: hidden; /* 角丸のため */
     /* デフォルトはsmallサイズで設定 */
-    grid-template-columns: repeat(7, 70px);
-    grid-template-rows: repeat(6, 70px);
+    grid-template-columns: repeat(var(--cols), 70px);
+    grid-template-rows: repeat(var(--rows), 70px);
 }
 
 .cell {
