@@ -32,8 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
             MAX_DEPTH = 6; // 6x7盤面では深く探索
             gameBoard.classList.add('cols-7');
             gameBoard.style.setProperty('--cols', COLS); 
-            gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 70px)`;
-            gameBoard.style.gridTemplateRows = `repeat(${ROWS}, 70px)`;
+            gameBoard.style.setProperty('--rows', ROWS);
+            //gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 70px)`;
+            //gameBoard.style.gridTemplateRows = `repeat(${ROWS}, 70px)`;
         } else { // 'large'
             ROWS = 10;
             COLS = 9;
@@ -41,8 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
             gameBoard.classList.add('large-board', 'cols-9');
 
             gameBoard.style.setProperty('--cols', COLS);
-            gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 55px)`;
-            gameBoard.style.gridTemplateRows = `repeat(${ROWS}, 55px)`;
+            gameBoard.style.setProperty('--rows', ROWS);
+            //gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 55px)`;
+            //gameBoard.style.gridTemplateRows = `repeat(${ROWS}, 55px)`;
         }
         initializeBoard(); // 盤面サイズが変更されたら再初期化
     }
@@ -54,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // CSSのgrid-template-columnsとgrid-template-rowsはsetBoardSizeで設定済み
         // cellのサイズも動的に設定
-        const cellSize = (gameBoard.classList.contains('large-board') ? 55 : 70);
-        const previewDiskSize = (gameBoard.classList.contains('large-board') ? 50 : 60);
+        //const cellSize = (gameBoard.classList.contains('large-board') ? 55 : 70);
+        //const previewDiskSize = (gameBoard.classList.contains('large-board') ? 50 : 60);
 
         for (let r = 0; r < ROWS; r++) {
             for (let c = 0; c < COLS; c++) {
@@ -74,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // プレビューディスクを追加
                 const previewDisk = document.createElement('div');
                 previewDisk.classList.add('preview-disk');
-                previewDisk.style.width = `${previewDiskSize}px`;
-                previewDisk.style.height = `${previewDiskSize}px`;
+                // previewDisk.style.width = `${previewDiskSize}px`;
+                // previewDisk.style.height = `${previewDiskSize}px`;
                 cell.appendChild(previewDisk);
 
                 gameBoard.appendChild(cell);

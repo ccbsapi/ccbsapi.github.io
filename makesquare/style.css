@@ -170,18 +170,6 @@ input:checked + .slider:before {
 #game-board.cols-9 .cell:nth-last-child(-n+9) { border-bottom: 1px solid #e0e0e0; }
 
 
-/* 大サイズ (10x9) 用のセルサイズ */
-#game-board.large-board .cell {
-    width: 55px;
-    height: 55px;
-}
-
-/* 大サイズ時のプレビューディスク */
-#game-board.large-board .preview-disk {
-    width: 50px;
-    height: 50px;
-}
-
 
 /* プレイヤー1（赤）の石 */
 .cell.player1 {
@@ -208,6 +196,8 @@ input:checked + .slider:before {
     background-color: var(--preview-color); /* JavaScriptから設定されるカスタムプロパティ */
     opacity: 0; /* デフォルトでは非表示 */
     transition: opacity 0.2s ease;
+    width: 80%; /* セルサイズの80% */
+    height: 80%;
 }
 
 .cell:hover .preview-disk {
@@ -292,6 +282,8 @@ input:checked + .slider:before {
         border-radius: 5px;
         /* ボーダーの計算をより厳密に */
         box-sizing: border-box; 
+        grid-template-columns: repeat(var(--cols), calc((98vw - 20px) / var(--cols)));
+        grid-template-rows: repeat(var(--rows), calc((98vw - 20px) / var(--cols)));
     }
 
     /* 各セル、プレビューディスクのサイズをレスポンシブにする */
@@ -299,25 +291,24 @@ input:checked + .slider:before {
         min-width: 30px; /* 最小幅を少し小さく */
         min-height: 30px; /* 最小高さを少し小さく */
         /* widthとheightの計算式を修正。vwから直接引く値を増やして、ボーダーと間隔をより多く考慮 */
-        width: calc((98vw - 20px) / var(--cols)); /* 100vwから20px引く (余白とボーダーの合計) */
-        height: calc((98vw - 20px) / var(--cols)); /* 同上 */
+        width: calc(var(--cell-size)); /* 100vwから20px引く (余白とボーダーの合計) */
+        height: calc(var(--cell-size)); /* 同上 */
         border-width: 0.5px;
         flex-shrink: 0; /* セルが縮まないように固定 */
-    }
-
-    .preview-disk {
-        width: 80%;
-        height: 80%;
     }
 
     /* スモールボード (6x7) の場合 */
     #game-board.cols-7 .cell {
         --cols: 7;
+        --rows: 6;
+        --cell-size: calc((98vw - 20px) / 7); /* 7列に合わせて計算 */
     }
 
     /* ラージボード (10x9) の場合 */
     #game-board.cols-9 .cell {
         --cols: 9;
+        --rows: 10;
+        --cell-size: calc((98vw - 20px) / 9); /* 9列に合わせて計算 */
     }
     
     #reset-button {
