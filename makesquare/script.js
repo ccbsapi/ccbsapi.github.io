@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let board = [];
     let currentPlayer = 1; // 1: プレイヤー1 (赤), 2: プレイヤー2 (黄)
     let gameOver = false;
-    let isVsComputerMode = false; // コンピュータ対戦モードかどうか
+    let isVsComputerMode = true; // コンピュータ対戦モードかどうか
     const AI_PLAYER = 2; // コンピュータは常にプレイヤー2と仮定
 
     let humanStarts = true; // 人間が先手かどうか。モード切り替え時に交互にする
