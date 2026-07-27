@@ -1,9 +1,35 @@
 <!DOCTYPE html>
-<html>
-    <style>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>便利</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 共通ヘッダーがここに挿入されます -->
+    <div id="header" data-page-id="home"></div>
 
-    </style>
-    <body>
-        空のページ
-    </body>
+    <main>
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">プロフィール</h2>
+            </div>
+            <div class="content-box">
+                Twitterで級数・積分bot(<a href="https://x.com/SeriesIntegral">@SeriesIntegral</a>)を運営しています. 多重ゼータ値に興味があります.
+                <p>
+                    <h3>リンク</h3>
+                    <ul>
+                        <li>X : <a href="https://x.com/BenriBot_ccbs">@BenriBot_ccbs</a></li>
+                        <li>Mathlog : <a href="https://mathlog.info/users/1631">ホーム</a></li>
+                    </ul>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- スクリプトの読み込み（読み込み順が重要です） -->
+    <script src="script.js"></script>
+    <script src="assets/header.js"></script>
+</body>
 </html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+
+  <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width,user-scalable=no, initial-scale=1.0" >
+  <title>たすき掛け10問アタック</title>
+  <style>
+    html,body,#main{
+      height: 100%;
+      margin: 0;
+    }
+    
+    #main{
+      display: flex;
+      flex-direction: column;
+    }
+    
+    
+    #screen{
+      flex :1.5;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    #board{
+      background-color: #262;
+    }
+    
+    #question{
+      color: #fff;
+      font-size: 10vmin;
+      box-sizing: border-box;
+      text-align: center;
+      padding: 10vmin;
+      padding-top:15vmin;
+    }
+    
+    #answer{
+      font-size: 10vmin;
+      padding: 10vmin;
+      padding-top:0;
+      color:white;
+    }
+    
+    .ans{
+      background-color: #aaa;
+      color: #222;
+      display: inline-block;
+    }
+    
+    #judgement{
+      color: #faa;
+      font-size: 10vmin;
+      position: absolute;
+      float: left;
+    }
+    
+    #info{
+      position: absolute;
+      right:0;
+      color: #fff;
+      font-size: 4vmin;
+    }
+    #progress-container{
+      flex:1;
+      background-color: #fff;
+    }
+    
+    #progress{
+      background-color: #8af;
+      height: 100%;
+      width:10;
+      transition-duration: .5s;
+    }
+    
+    
+    #keyboard{
+      background-color: #aaa;
+      display: flex;
+      flex:1;
+    }
+    
+    #keyboard div{
+      flex: 1;
+      flex-direction: column;
+      display: flex;
+    }
+    #keyboard div div{
+      color:#fff;
+      font-size:10vmin;
+      text-align: center;
+      line-height: 200%;
+      transition-duration: .05s;
+    }
+    #keyboard div div:hover{
+      background-color: #acc;
+    }
+    #keyboard_last{
+      background-color: orange;
+      line-height: 400%;
+    }
+    
+    #countdown{
+      position:fixed;
+      top:0;
+      left:0;
+      height:100%;
+      background-color: rgba(100,100,100,0.5);
+      color: #fff;
+      font-size:100vmin;
+      text-align: center;
+      line-height: 200%;
+      width: 100%;
+    }
+    
+    
+    
+    
+    
+    
+    #launcher{
+      position:fixed;
+      top:0;
+      bottom:0;
+      left:0;
+      right:0;
+      
+      padding:3%;
+      
+      background-color: #fff;
+      
+    }
+
+    h1{
+      text-align: center;
+      font-size:30px;
+    }
+    
+    #startbutton{
+      width:50%;
+      margin:5vmin;
+      margin-left:25%;
+      background-color: orange;
+      font-size:10vmin;
+      text-align: center;
+      border-radius:3vmin;
+      border:5px solid #fc8;
+      color:#fff;
+      box-sizing: border-box;
+    }
+    
+    #myrecords-title{
+      padding:1vmin;
+      font-size:8vmin;
+    }
+    #myrecords{
+      background-color: #edf;
+      height:50%;
+      margin:10px;
+      overflow:scroll;
+    }
+    
+    .records{
+      width:100%;
+      table-layout: fixed;
+      background-color: #555;
+    }
+    
+    
+    .records th{
+      color:#fff;
+    }
+    
+    .records td{/*table*/
+      background-color: #fff;
+      width:100%;
+    }
+    
+    
+  </style>
+
+<body>
+  <div id="main">
+    <div id="screen">
+      <div id="board">
+        <div id="question"></div>
+        <div id="answer">
+          =(<span id="ope_1"></span><span id="ans_1" class="ans">_</span>x
+          <span id="ope_2">+</span><span id="ans_2">_</span>)
+          (<span id="ope_3"></span><span id="ans_3">_</span>x
+          <span id="ope_4">+</span><span id="ans_4">_</span>)
+        </div>
+      </div>
+      <div id="judgement"></div>
+      <div id="info">
+        <div><span id="Qn">0</span>/10 問目</div>
+        <div>タイム:<span id="time">0</span>秒</div>
+        <div>ミス:<span id="Mn">0</span>回</div>
+      </div>
+      <div id="progress-container">
+        <div id="progress"></div>
+      </div>
+      <div id="countdown"></div>
+    </div>
+    <div id="keyboard">
+      <div>
+        <div onclick="input('1')">1</div>
+        <div onclick="input('4')">4</div>
+        <div onclick="input('7')">7</div>
+        <div onclick="input('0')">0</div>
+      </div>
+      <div>
+        <div onclick="input('2')">2</div>
+        <div onclick="input('5')">5</div>
+        <div onclick="input('8')">8</div>
+        <div onclick="input('<')">&lt;</div>
+      </div>
+      <div>
+        <div onclick="input('3')">3</div>
+        <div onclick="input('6')">6</div>
+        <div onclick="input('9')">9</div>
+        <div onclick="input('>')">&gt;</div>
+      </div>
+      <div id="keyboard_last">
+        <div onclick="input('^')">＜╳</div>
+        <div onclick="input(':')">+-</div>
+        <div onclick="input('#')">Enter</div>
+      </div>
+    </div>
+  </div>
+  <div id="launcher">
+    <h1>たすき掛け10問アタック</h1>
+    <div onclick="init()" id="startbutton">Start!</div>
+    <div id="myrecords-title">自分の記録(トップ20)</div>
+    <div id="myrecords">
+      <table id="myrecords-top" class="records">
+        <tr>
+          <th>順位</th><th>タイム</th><th>ミス回数</th>
+        </tr>
+        <tr>
+          <td>1</td><td>43秒</td><td>0回</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <script>
+  
+  var question=document.getElementById('question');
+  var ans_1=document.getElementById('ans_1');
+  var ans_2=document.getElementById('ans_2');
+  var ans_3=document.getElementById('ans_3');
+  var ans_4=document.getElementById('ans_4');
+  var ans=[ans_1,ans_2,ans_3,ans_4];
+  var ope_1=document.getElementById('ope_1');
+  var ope_2=document.getElementById('ope_2');
+  var ope_3=document.getElementById('ope_3');
+  var ope_4=document.getElementById('ope_4');
+  var opes=[ope_1,ope_2,ope_3,ope_4];
+  var judgement=document.getElementById("judgement");
+  var progress=document.getElementById("progress");
+  var time=document.getElementById('time');
+  var countdown=document.getElementById('countdown');
+  var launcher=document.getElementById('launcher');
+  var mytop=document.getElementById('myrecords-top');
+  var timerSwitch=false;
+  var timerStart=new Date;
+  var que=q();
+  var select=0;
+  var Qn=0;
+  var Mn=0;
+  
+  window.onload=launch;
+  
+  function init(){
+    
+    Qn=0;
+    Mn=0;
+    
+    document.getElementById('Qn').innerText="0";
+    document.getElementById('Mn').innerText="0";
+    
+    ans.forEach(function(v){v.innerText="_"})
+    ope_1.innerText="";
+    ope_2.innerText="+";
+    ope_3.innerText="";
+    ope_4.innerText="+";
+    
+    countdown.style.display="block";
+    launcher.style.display="none";
+    //select=0;
+    /*カウントダウン*/
+    countdown.innerText="3";
+    setTimeout(function(){
+      countdown.innerText="2";
+      setTimeout(function(){
+        countdown.innerText="1";
+        setTimeout(function(){
+          countdown.style.display="none";
+          timeStart=new Date(); 
+          timerSwitch=true;
+          timer();
+          makeQ();
+        },1000);
+      },1000);
+    },1000);
+  }
+  
+    function makeQ(){
+      ans.forEach(function(v){v.innerText="_"})
+      ans[select].classList.remove("ans");
+      select=0;
+      ans[0].classList.add("ans");
+      
+      ope_1.innerText="";
+      ope_2.innerText="+";
+      ope_3.innerText="";
+      ope_4.innerText="+";
+      
+      que=q();
+      
+      question.innerHTML=que[0];
+      Qn++;
+      progress.style.width=10*(Qn-1)+"%";
+      document.getElementById('Qn').innerText=Qn;
+    }
+  
+    function q(){
+      var a=Math.abs(r());
+      var b=r();
+      while(!p(a,b))b=r();
+      
+      var c=Math.abs(r());
+      if(Math.random()<0.2)c*=-1;
+      var d=r();
+      while(!p(c,d))d=r();
+      
+      var A=a*c;
+      var B=a*d+b*c;
+      var C=b*d;
+      
+      var Q=A+"x<sup>2</sup>"
+      if(B){
+        Q+=B>0?"+":"-";
+        var abs=Math.abs(B);
+        if(abs!=1)Q+=abs;
+        Q+="x";
+      }
+      if(C>0)Q+="+";
+      Q+=C;
+      return [Q,A,B,C];
+      
+    }
+  
+    function r(){
+      return Math.floor(Math.random()*12-5)||1;
+    }
+  
+    function p(a,b){
+      a=Math.abs(a);
+      b=Math.abs(b);
+      if(a==1||b==1)return true;
+      if(!(a&1||b&1)||!(b%a&&a%b))return;
+      while(!(a&1)&&a>1)a/=2;
+      while(!(b&1)&&b>1)b/=2;
+      if(a>b){
+        var c=a;
+        a=b;
+        b=c;
+      }
+      for(var i=3;i<a/3;i+=2){
+        if(!(a%i)){
+          if(!(b%i))return;
+          while(!(a%i)&&a>1)a/=i;
+        }
+      }
+      return true;
+    }
+    
+    function input(key){
+      var selecting=ans[select];
+      if(key=="^")selecting.innerText=selecting.innerText.slice(0,-1)||"_";
+      else if(key==">"){
+        selecting.classList.remove("ans");
+        select=(select+1)%4;
+        ans[select].classList.add("ans");
+      }
+      else if(key=="<"){
+        selecting.classList.remove("ans");
+        select=(select+3)%4;
+        ans[select].classList.add("ans");
+      }
+      else if(key==":"){
+        var ope=opes[select];
+        var o=ope.innerText;
+        if(select&1){
+          ope.innerText=o=="+"?"-":"+";
+        }else{
+          ope.innerText=o==""?"-":"";
+        }
+      }
+      else if(key=="#"){
+        var vals=[];
+        for(var n in ans){
+          if(ans[n].innerText=="_")return;
+          vals[n]=ans[n].innerText*(opes[n].innerText=="-"?-1:1);
+        }
+        var A=vals[0]*vals[2];
+        var B=vals[0]*vals[3]+vals[1]*vals[2];
+        var C=vals[1]*vals[3];
+        if(que[1]==A&&que[2]==B&&que[3]==C){
+          judge("正解");
+          if(Qn==10){
+            timerSwitch=false;
+            var time=Math.floor((new Date-timeStart)/10)/100;
+            alert("終了!\n\nタイム:"+time+"秒"
+                  +"\nミス回数"+Mn+"回");
+            setRecord(time,Mn);
+            launch();
+          }else
+            makeQ();
+        }else{
+          judge("不正解");
+          Mn++;
+          document.getElementById('Mn').innerText=Mn;
+        }
+      }
+      else{
+        var t=selecting.innerText;
+        if(t=="_")t="";
+        selecting.innerText=t+key;
+      }
+    }
+    
+    function judge(j){
+      judgement.innerText=j;
+      setTimeout(function(){judgement.innerText=""},1000);
+    }
+    
+    function timer(){
+      var t=(Math.floor((new Date-timeStart)/10)/100+"").split('.');
+      time.innerText=t[0]+"."+((t[1]||"")+"00").slice(0,2);
+      if(timerSwitch){
+        setTimeout(timer,10);
+      }
+    }
+    
+    
+    
+    
+    
+    
+    function launch(){
+      getRecord();
+      launcher.style.display="block";
+    }
+    
+    
+    function getRecord(){
+      var rec=JSON.parse(localStorage.record||'[]');
+      mytop.innerHTML="<tr><th>順位</th><th>タイム</th><th>ミス回数</th></tr>";
+      for(var i in rec){
+        mytop.innerHTML+=
+          "\n<tr><td>"+(i*1+1)+"</td><td>"+rec[i][0]+"秒</td><td>"+(rec[i][1]*1)+"回</td></tr>";
+      }
+    }
+    
+    function setRecord(time,mistake){
+      var maxLength=20;
+      var rec=JSON.parse(localStorage.record||'[]');
+      var appended=false;
+      
+      if(!rec[maxLength-1]||rec[maxLength-1][0]>time){
+        for(var i in rec){
+          if(time<rec[i][0]||(time==rec[i][0]&&mistake<=rec[i][1])){
+            rec.splice(i,0,[time,mistake]);
+            localStorage.record=JSON.stringify(rec.slice(0,maxLength));
+            appended=true;  
+            break;
+          }
+        }
+         if(!rec[maxLength-1]&&!appended){
+          rec.push([time,mistake]);
+          localStorage.record=JSON.stringify(rec.slice(0,maxLength));
+        }
+      }
+    }
+  </script>
+</body>
+</html>

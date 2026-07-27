@@ -1,0 +1,121 @@
+/* 全体の基本設定 */
+body {
+    font-family:  Arial, Helvetica, sans-serif;
+    color: #333;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    line-height: 1.8;
+    background-color: #FAFAFA;
+}
+
+a {
+    color: #00a; /* 濃い紺色 */
+    text-decoration: underline;
+    transition-duration: .2s;
+}
+
+/* ヘッダー関連 (header.htmlに適用されるスタイル) */
+header {
+    text-align: center;
+    /* margin-bottom: 25px; */
+}
+
+header h2 {
+    font-size: 1.8em;
+    font-weight: lighter;
+    margin: 0 0 20px 0;
+    color: #222;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #00004d; /* 濃い紺色 */
+    font-size: 1.15em;
+    padding: 10px;
+    display: inline-block;
+    position: relative;
+}
+
+.nav-links a::after {
+    content: "";
+    display: flex;
+    justify-content: center;
+    width: 0;
+    height: 3px;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffaaaa; /* 薄い赤色 */
+    transition: width 0.3s;
+}
+
+.nav-links a.active::after {
+    background-color: #cc0000; /* 赤色 */
+    width: 100%;
+}
+
+.nav-links a:hover::after{
+    width: 100%;
+}
+
+.nav-links a.active{
+    /*color: #cc0000; */ /* 赤色 */
+    font-weight: bold;
+}
+
+.header-divider {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin-bottom: 40px;
+    margin-top: 2px;
+}
+
+/* セクションのヘッダー周り */
+.section-header {
+    margin-bottom: 15px;
+}
+
+.section-title {
+    color: #00004d;
+    font-size: 1.6em;
+    margin: 0;
+}
+/* コンテンツボックス (角丸と左側の太線) */
+.content-box {
+    /* border: 1px solid #d3d9e6; */
+    border-left: 4px solid white; /* 左側の太い紺色 */
+    border-radius: 10px;
+    padding: 20px 25px;
+    margin-bottom: 50px;
+    background-color: #FFF;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.content-box p {
+    margin: 0;
+    font-size: 1.05em;
+}
+
+.content-box ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.content-box li {
+    margin-bottom: 12px;
+    font-size: 1.05em;
+}
+.content-box li:last-child {
+    margin-bottom: 0;
+}
